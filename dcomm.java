@@ -10,8 +10,9 @@ public class dcomm {
         float density = 0;
         if (directoryValues[1] != 0)
             density = directoryValues[0] / directoryValues[1];
+        int loc = directoryValues[1]-directoryValues[0];
 
-        System.out.println("Comments density for "+path+": "+ density);
+        System.out.println(path+", comments density: "+ density+", Lines of code: "+loc);
         return density;
     }
 
