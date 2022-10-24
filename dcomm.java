@@ -2,10 +2,10 @@ import java.io.*;
 
 public class dcomm {
     public static void main(String[] args) {
-        commentsDensity(args[0]);
+        dcommLOC(args[0]);
     }
 
-    public static float commentsDensity(String path) {
+    public static float[] dcommLOC(String path) {
         int[] directoryValues = directoryParser(path);
         float density = 0;
         if (directoryValues[1] != 0)
@@ -13,7 +13,7 @@ public class dcomm {
         int loc = directoryValues[1]-directoryValues[0];
 
         System.out.println(path+", comments density: "+ density+", Lines of code: "+loc);
-        return density;
+        return new float[]{density,loc};
     }
 
     public static int[] directoryParser(String path) {
@@ -86,6 +86,12 @@ public class dcomm {
             System.out.println("Empty line or file");
             return new int[]{0, 0};
         }
+        float density = 0;
+        if (nloc != 0)
+            density = cloc/nloc;
+        int loc = nloc-cloc;
+
+        System.out.println(file+", comments density: "+ density+", Lines of code: "+loc);
         return new int[]{cloc, nloc};
     }
 }
