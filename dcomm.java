@@ -5,42 +5,48 @@ public class dcomm {
         dcommLOC(args[0]);
     }
 
-    public static float[] dcommLOC(String path) {
-        int[] directoryValues = directoryParser(path);
-        float density = 0;
-        if (directoryValues[1] != 0)
-            density = (float)directoryValues[0] / directoryValues[1];
-        int loc = directoryValues[1]-directoryValues[0];
-        System.out.println(directoryValues[0]);
-        System.out.println(path+", comments density: "+ density+", Lines of code: "+loc);
-        return new float[]{density,loc};
+    public static void dcommLOC(String path) {
+        try {
+            File output = new File("dcom_loc.csv");
+            output.createNewFile();
+        } catch (IOException e) {
+            System.out.println("File creation error");
+        }
+        try {
+            FileWriter csvWriter = new FileWriter("dcom_loc.csv");
+            csvWriter.write("file,dcom,loc\n");
+            directoryParser(path, csvWriter);
+            csvWriter.close();
+        } catch (IOException e) {
+            System.out.println("File Writer error");
+        }
     }
 
-    public static int[] directoryParser(String path) {
-        System.out.println(path);
-        float density = 0;
-        int[] linesAndComments = new int[2];
+    public static void directoryParser(String path, FileWriter csvWriter) {
         File parent = new File(path);
-
         File[] children = parent.listFiles();
         for (File i : children) {
             if (i.isDirectory()) {
-                int[] subdirectoryValues = directoryParser(path + "/" + i.getName());
-                linesAndComments[0] += subdirectoryValues[0];
-                linesAndComments[1] += subdirectoryValues[1];
+                directoryParser(path + "/" + i.getName(), csvWriter);
             } else {
-                int[] fileValues = fileParser(path+"/"+i.getName());
-                linesAndComments[0] += fileValues[0];
-                linesAndComments[1] += fileValues[1];
+                String filePath = path + "/" + i.getName();
+                if (!filePath.endsWith(".java")) {
+                    continue;
+                }
+                int[] fileValues = fileParser(filePath);
+                float density = 0;
+                if (fileValues[1] != 0)
+                    density = fileValues[0] / (float) fileValues[1];
+                try {
+                    csvWriter.write(filePath + "," + density + "," + (fileValues[1] - fileValues[0]) + "\n");
+                } catch (IOException e) {
+                    System.out.println("File Writer Error");
+                }
             }
         }
-        return linesAndComments;
     }
 
     public static int[] fileParser(String file) {
-        if (!file.endsWith(".java")) {
-            return new int[]{0, 0};
-        }
         int nloc = 0;
         int cloc = 0;
 
@@ -84,10 +90,9 @@ public class dcomm {
         }
         float density = 0;
         if (nloc != 0)
-            density = (float)cloc/nloc;
-        int loc = nloc-cloc;
-
-        System.out.println(file+", comments density: "+ density+", Lines of code: "+loc);
+            density = (float) cloc / nloc;
+        int loc = nloc - cloc;
+        System.out.println(file + ", comments density: " + density + ", Lines of code: " + loc);
         return new int[]{cloc, nloc};
     }
 }
