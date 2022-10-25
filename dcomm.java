@@ -9,22 +9,19 @@ public class dcomm {
         int[] directoryValues = directoryParser(path);
         float density = 0;
         if (directoryValues[1] != 0)
-            density = directoryValues[0] / directoryValues[1];
+            density = (float)directoryValues[0] / directoryValues[1];
         int loc = directoryValues[1]-directoryValues[0];
-
+        System.out.println(directoryValues[0]);
         System.out.println(path+", comments density: "+ density+", Lines of code: "+loc);
         return new float[]{density,loc};
     }
 
     public static int[] directoryParser(String path) {
+        System.out.println(path);
         float density = 0;
         int[] linesAndComments = new int[2];
         File parent = new File(path);
 
-        if (!parent.isDirectory()) {
-            linesAndComments = fileParser(path);
-            return linesAndComments;
-        }
         File[] children = parent.listFiles();
         for (File i : children) {
             if (i.isDirectory()) {
@@ -32,7 +29,7 @@ public class dcomm {
                 linesAndComments[0] += subdirectoryValues[0];
                 linesAndComments[1] += subdirectoryValues[1];
             } else {
-                int[] fileValues = fileParser(path);
+                int[] fileValues = fileParser(path+"/"+i.getName());
                 linesAndComments[0] += fileValues[0];
                 linesAndComments[1] += fileValues[1];
             }
@@ -42,7 +39,6 @@ public class dcomm {
 
     public static int[] fileParser(String file) {
         if (!file.endsWith(".java")) {
-            System.out.println("Not a java file.");
             return new int[]{0, 0};
         }
         int nloc = 0;
@@ -88,7 +84,7 @@ public class dcomm {
         }
         float density = 0;
         if (nloc != 0)
-            density = cloc/nloc;
+            density = (float)cloc/nloc;
         int loc = nloc-cloc;
 
         System.out.println(file+", comments density: "+ density+", Lines of code: "+loc);
