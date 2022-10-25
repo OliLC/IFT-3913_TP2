@@ -55,9 +55,10 @@ public class dcomm {
             boolean multilineComment = false;
             String line;
             while ((line = reader.readLine()) != null) {
-                if (!"".equals(line.trim())) {
+                String trimmedLine = line.trim();
+                if (!"".equals(trimmedLine)) {
                     nloc++;
-                    if (line.trim().endsWith("*/")) {
+                    if (trimmedLine.endsWith("*/")) {
                         if (multilineComment) {
                             cloc++;
                             multilineComment = false;
@@ -68,13 +69,13 @@ public class dcomm {
                         cloc++;
                         continue;
                     }
-                    if (line.trim().startsWith("//")) {
+                    if (trimmedLine.startsWith("//")) {
                         cloc++;
                     }
-                    if (line.trim().startsWith("/*")) {
+                    if (trimmedLine.startsWith("/*")) {
                         cloc++;
                         multilineComment = true;
-                        if (line.trim().endsWith("*/")) {
+                        if (trimmedLine.endsWith("*/")) {
                             multilineComment = false;
                         }
                     }
